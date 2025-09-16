@@ -33,6 +33,11 @@ DEBUG = True
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "haekal-handrian-sportyshop.pbp.cs.ui.ac.id"]
 
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://haekal-handrian-sportyshop.pbp.cs.ui.ac.id"
+]
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -60,7 +65,7 @@ ROOT_URLCONF = 'Sportyshop.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

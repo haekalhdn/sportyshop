@@ -95,31 +95,50 @@
 </head>
 <body>
 
-  <header>
-    <div class="brand">
-      <img src="https://i.imgur.com/kFjHrVj.png" alt="Logo">
-      SPORTYSHOP
-    </div>
-  </header>
+<h1>SPORTYSHOP</h1>
 
-  <section class="hero">
-    <h2>Welcome</h2>
-    <p>Website masih dalam tahap develop ditunggu yak!</p>
-  </section>
+<h5>NPM: </h5>
+<p>{{ npm }}</p>
 
-  <section class="grid">
-    <a href="https://www.nike.com/id/" class="card">
-      <img src="https://i.imgur.com/UzcXQyl.jpeg" alt="NIKE">
-      <div class="caption">
-        <div class="title">NIKE</div>
-        <div class="price">Rp ???</div>
-      </div>
-    </a>
-  </section>
+<h5>Name:</h5>
+<p>{{ name }}</p>
 
-  <footer>
-    <span>{{ name }} || {{ npm }} || {{ class }}</span>
-  </footer>
+<h5>Class:</h5>
+<p>{{ class }}</p>
 
+<a href="{% url 'main:create_product' %}">
+  <button>+ Add product</button>
+</a>
+
+<hr>
+
+{% if not product_list %}
+<p>Belum ada data produk terbaru.</p>
+{% else %}
+
+{% for product in product_list %}
+<div>
+  <h2><a href="{% url 'main:show_product' product.id %}">{{ product.name }}</a></h2>
+
+  <p><b>{{ product.get_category_display }}</b>{% if product.is_featured %} | 
+    <b>Featured</b>{% endif %}{% if product.is_product_hot %} | 
+    <b>Hot</b>{% endif %} | <i>{{ product.created_at|date:"d M Y H:i" }}</i> 
+    | Views: {{ product.product_views }}</p>
+
+  {% if product.thumbnail %}
+  <img src="{{ product.thumbnail }}" alt="thumbnail" width="150" height="100">
+  <br />
+  {% endif %}
+
+  <p>{{ product.content|truncatewords:25 }}...</p>
+
+  <p><a href="{% url 'main:show_product' product.id %}"><button>Read More</button></a></p>
+</div>
+
+<hr>
+{% endfor %}
+
+{% endif %}
+ 
 </body>
 </html>
