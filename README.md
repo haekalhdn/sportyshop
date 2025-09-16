@@ -1,3 +1,6 @@
+TUGAS 2
+link pws : https://haekal-handrian-sportyshop.pbp.cs.ui.ac.id/
+
 1. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).  
    1. Langkah pertama adalah membuat folder projek yaitu sportyshop, aktifkan virtual env, tulis requirements.txt. dan jalankan kemudian menginisialisasi Git, tulis .gitignore untuk menutup .env dan db.sqlite3.
 
@@ -30,3 +33,39 @@
 
 Referensi  
 Tim Dosen PBP. (2024). PPT MTV Django Architecture. Fakultas Ilmu Komputer, Universitas Indonesia.
+
+/////----------------/-----------------------------------///////////////
+
+<br>Tugas 3 PBP<br>
+
+1.  Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?
+   Data delivery berperan sebagai "jembatan" komunikasi antara berbagai bagian aplikasi, misalnya frontend, backend, hingga layanan pihak ketiga. Tanpa adanya ini, setiap komponen akan berjalan sendiri-sendiri dan sulit saling bertukar informasi. Dengan data delivery, aplikasi bisa menampilkan data yang selalu up-to-date, interaksi pengguna lebih responsif, dan integrasi antar sistem menjadi lebih terstandar serta efisien.
+
+2. Menurutmu, mana yang lebih baik antara XML dan JSON? Mengapa JSON lebih populer dibandingkan XML?
+   XML dan JSON sama-sama bisa digunakan untuk pertukaran data, tapi JSON lebih unggul di aplikasi terbaru saat ini kenapa? karena JSON lebih singkat, strukturnya sederhana, mudah dibaca manusia, dan proses parsing yang lebih cepat. Disisi lain, XML memang mendukung struktur yang lebih kompleks, tapi terlalu verbose sehingga ukuran datanya jadi lebih besar. Popularitas JSON juga ikut naik karena langsung dengan JavaScript, sehingga kita sebagai user lebih mudah dengan aplikasi web lebih praktis dan akhirnya lebih banyak diadopsi oleh developer.
+
+3.  Jelaskan fungsi dari method is_valid() pada form Django dan mengapa kita membutuhkan method tersebut?
+   is\_valid() dipakai untuk mengecek apakah data yang dikirim lewat form sudah sesuai dengan aturan validasi yang ditentukan. Django akan memverifikasi apakah field yang wajib diisi tidak kosong, tipe datanya benar, serta aturan tambahan lainnya terpenuhi. Kalau valid misalnya maka hasilnya bisa diakses lewat cleaned\_data untuk disimpan ke database. Kalau tidak valid, method ini akan mengembalikan False sekaligus menyimpan pesan error yang bisa ditampilkan di halaman form agar pengguna tau apa yang salah.
+
+4. Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
+   csrf\_token dibutuhkan sebagai lapisan keamanan untuk mencegah serangan Cross-Site Request Forgery (CSRF). Token ini memastikan bahwa request yang dikirim benar-benar berasal dari halaman aplikasi milik kita, bukan dari situs lain yang mencoba menyamar. Tanpa adanya token, seorang penyerang bisa mengeksploitasi sesi login pengguna untuk melakukan aksi berbahaya, misalnya mengirim form palsu yang secara otomatis mengubah data penting atau melakukan transaksi tanpa sepengetahuan pengguna. Dengan begitu, keberadaan csrf\_token sangat penting untuk menjaga keamanan aplikasi kita.
+
+5.  Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
+   1. Import HttpResponse dari django.http dan serializers dari django.core.  
+   2. Membuat empat fungsi baru di views.py, yaitu show\_xml, show\_json, show\_xml\_by\_id, dan show\_json\_by\_id.  
+   3. Pada show\_xml dan show\_json, mengambil semua objek Product, lalu mengubah hasil query menjadi format XML/JSON dan mengirimkannya sebagai response.  
+   4. Pada show\_xml\_by\_id dan show\_json\_by\_id, mencari objek berdasarkan primary key, lalu mengembalikan data dalam format yang sesuai.  
+   5. Menambahkan semua routing tersebut di main/urls.py agar bisa diakses lewat URL.  
+   6. Membuat template main.html yang menampilkan daftar produk dengan tombol Add dan Detail.  
+   7. Menambahkan form di forms.py serta template create\_product.html untuk menambahkan produk baru.  
+   8. Membuat halaman detail product\_detail.html untuk menampilkan informasi lengkap tiap produk.  
+   9. Menambahkan models baru yaitu stock untuk stok barang, created\_at untuk waktu barang di upload, product\_views untuk melihat views.  
+   10. Setiap ada perubahan kode, melakukan git add ., git commit, lalu git push ke repository GitHub maupun ke PWS.  
+   11. Tidak lupa juga untuk setiap perubahan pada models selalu push migrations dan migrate
+       
+6. Apakah ada feedback untuk asdos di tutorial 2 yang sudah kalian kerjakan? hmm kurang lenihnya aman kak..
+
+Foto Postman
+<img width="2559" height="1520" alt="Screenshot 2025-09-16 225850" src="https://github.com/user-attachments/assets/6a72b1ff-918f-49cb-9689-4b046d442879" />
+
+
