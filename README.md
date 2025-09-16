@@ -50,20 +50,26 @@ Tim Dosen PBP. (2024). PPT MTV Django Architecture. Fakultas Ilmu Komputer, Univ
 4. Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
    csrf\_token dibutuhkan sebagai lapisan keamanan untuk mencegah serangan Cross-Site Request Forgery (CSRF). Token ini memastikan bahwa request yang dikirim benar-benar berasal dari halaman aplikasi milik kita, bukan dari situs lain yang mencoba menyamar. Tanpa adanya token, seorang penyerang bisa mengeksploitasi sesi login pengguna untuk melakukan aksi berbahaya, misalnya mengirim form palsu yang secara otomatis mengubah data penting atau melakukan transaksi tanpa sepengetahuan pengguna. Dengan begitu, keberadaan csrf\_token sangat penting untuk menjaga keamanan aplikasi kita.
 
-5.  Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
+5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
    1. Import HttpResponse dari django.http dan serializers dari django.core.  
    2. Membuat empat fungsi baru di views.py, yaitu show\_xml, show\_json, show\_xml\_by\_id, dan show\_json\_by\_id.  
-   3. Pada show\_xml dan show\_json, mengambil semua objek Product, lalu mengubah hasil query menjadi format XML/JSON dan mengirimkannya sebagai response.  
+   3. Pada show\_xml dan show\_json, kita mengambil semua objek Product, lalu mengubah hasil query menjadi format XML/JSON dan mengirimkannya sebagai response.  
    4. Pada show\_xml\_by\_id dan show\_json\_by\_id, mencari objek berdasarkan primary key, lalu mengembalikan data dalam format yang sesuai.  
    5. Menambahkan semua routing tersebut di main/urls.py agar bisa diakses lewat URL.  
-   6. Membuat template main.html yang menampilkan daftar produk dengan tombol Add dan Detail.  
-   7. Menambahkan form di forms.py serta template create\_product.html untuk menambahkan produk baru.  
-   8. Membuat halaman detail product\_detail.html untuk menampilkan informasi lengkap tiap produk.  
+   6. Membuat template main.html yang menampilkan daftar produk dengan tombol Add dan Detail(disini saya hanya mengubah news menjadi product menyesuaikan fungsi-fungsinya).  
+   7. Menambahkan form di forms.py serta membuat template create\_product.html untuk menambahkan produk baru.  
+   8. Membuat product\_detail.html,  untuk menampilkan informasi lengkap tiap produk.  
    9. Menambahkan models baru yaitu stock untuk stok barang, created\_at untuk waktu barang di upload, product\_views untuk melihat views.  
    10. Setiap ada perubahan kode, melakukan git add ., git commit, lalu git push ke repository GitHub maupun ke PWS.  
    11. Tidak lupa juga untuk setiap perubahan pada models selalu push migrations dan migrate
        
 6. Apakah ada feedback untuk asdos di tutorial 2 yang sudah kalian kerjakan? hmm kurang lenihnya aman kak..
+
+Referensi
+Django Documentation, https://docs.djangoproject.com/en/5.0/
+Json Website, https://www.json.org/json-en.html
+Imaginary Cloud. (2023, September 14). JSON vs XML: the differences. Mariana Berga
+,Rute Figueiredo. https://www.imaginarycloud.com/blog/json-vs-xml
 
 Foto Postman
 <img width="2559" height="1520" alt="Screenshot 2025-09-16 225850" src="https://github.com/user-attachments/assets/6a72b1ff-918f-49cb-9689-4b046d442879" />
