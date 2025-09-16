@@ -66,10 +66,10 @@ Tim Dosen PBP. (2024). PPT MTV Django Architecture. Fakultas Ilmu Komputer, Univ
 6. Apakah ada feedback untuk asdos di tutorial 2 yang sudah kalian kerjakan? hmm kurang lenihnya aman kak..
 
 Referensi
-Django Documentation, https://docs.djangoproject.com/en/5.0/
-Json Website, https://www.json.org/json-en.html
-Imaginary Cloud. (2023, September 14). JSON vs XML: the differences. Mariana Berga
-,Rute Figueiredo. https://www.imaginarycloud.com/blog/json-vs-xml
+<br>Django Documentation, https://docs.djangoproject.com/en/5.0/<br>
+<br>Json Website, https://www.json.org/json-en.html<br>
+<br>Imaginary Cloud. (2023, September 14). JSON vs XML: the differences. Mariana Berga<br>
+<br>,Rute Figueiredo. https://www.imaginarycloud.com/blog/json-vs-xml<br>
 
 Foto Postman
 <img width="2559" height="1520" alt="Screenshot 2025-09-16 225850" src="https://github.com/user-attachments/assets/6a72b1ff-918f-49cb-9689-4b046d442879" />
