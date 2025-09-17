@@ -20,4 +20,9 @@
 {% if product.stock is not None %}
     <p><b>Stock:</b> {{ product.stock }}</p>
 {% endif %}
+{% if product.user %}
+    <p>Author: {{ product.user.username }}</p>
+{% else %}
+    <p>Author: Anonymous</p>
+{% endif %}
 {% endblock content %}
