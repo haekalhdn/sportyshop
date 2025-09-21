@@ -35,6 +35,8 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1", "haekal-handrian-sportyshop.pbp.cs.ui
 
 CSRF_TRUSTED_ORIGINS = [
     "https://haekal-handrian-sportyshop.pbp.cs.ui.ac.id"
+    "http://haekal-handrian-sportyshop.pbp.cs.ui.ac.id"
+    "haekal-handrian-sportyshop.pbp.cs.ui.ac.id"
 ]
 
 
