@@ -75,3 +75,148 @@ Foto Postman
 <img width="2559" height="1520" alt="Screenshot 2025-09-16 225850" src="https://github.com/user-attachments/assets/6a72b1ff-918f-49cb-9689-4b046d442879" />
 
 
+
+## Tugas 4: Autentikasi, Session, dan Cookies di Django
+
+### Langkah implementasi
+
+#### 1) Registrasi: fungsi dan form
+
+Pertama saya menyiapkan kebutuhan import, lalu membuat view untuk pendaftaran pengguna baru.
+
+```python
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+```
+
+View register memanfaatkan UserCreationForm. Saat menerima request POST dan datanya valid, user disimpan, muncul notifikasi sukses, lalu diarahkan ke halaman login.
+
+```python
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    context = {'form': form}
+    return render(request, 'register.html', context)
+```
+
+Saya juga membuat template register.html untuk merender form, menyertakan `{% csrf_token %}` agar aman dari serangan CSRF. Terakhir, fungsi register didaftarkan di urls.py supaya bisa diakses lewat urlpatterns.
+
+#### 2) Login: autentikasi pengguna
+
+Berikut impor yang kupakai. AuthenticationForm untuk validasi kredensial, sedangkan authenticate dan login dari Django mengurus proses autentikasi dan pembuatan sesi.
+
+```python
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login
+```
+
+Saya membuat view login_user sebagai gerbang login dan menyiapkan login.html sebagai antarmuka. Seperti sebelumnya, fungsi ini juga kuhubungkan di urls.py melalui urlpatterns.
+
+#### 3) Logout: mengakhiri sesi
+
+Supaya pengguna bisa keluar dari akunnya dan menutup sesi, saya menambahkan fungsi sederhana berikut.
+
+```python
+def logout_user(request):
+    logout(request)
+    return redirect('main:login')
+```
+
+Tombol Logout kutaruh di main.html. Fungsinya diimpor ke urls.py dan rutenya ditambahkan ke urlpatterns.
+
+#### 4) Batasi akses halaman main dan product_detail
+
+Agar hanya pengguna yang sudah login yang bisa membuka halaman main dan product_detail, saya memakai dekorator bawaan Django login_required. Cukup tambahkan di view yang bersangkutan, misalnya show_main dan show_product.
+
+```python
+from django.contrib.auth.decorators import login_required
+
+@login_required(login_url='/login')
+def show_main(request):
+    ...
+```
+
+Dengan begitu, pengunjung yang belum login akan diarahkan ke halaman login.
+
+#### 5) Memakai cookies untuk menyimpan waktu login terakhir
+
+Saya ingin menampilkan kapan terakhir kali pengguna login. Untuk itu, di views.py saya mengimpor datetime, HttpResponseRedirect, dan reverse, lalu memodifikasi bagian login agar menyimpan timestamp ke cookie.
+
+```python
+if form.is_valid():
+    user = form.get_user()
+    login(request, user)
+    response = HttpResponseRedirect(reverse("main:show_main"))
+    response.set_cookie('last_login', str(datetime.datetime.now()))
+    return response
+```
+
+Di fungsi show_main, saya mengambil nilai cookie tersebut agar bisa ditampilkan di halaman.
+
+```python
+context = {
+    # konteks lain...
+    'last_login': request.COOKIES.get('last_login', 'Never'),
+}
+```
+
+Saat logout, cookie ini sekalian dihapus.
+
+```python
+def logout_user(request):
+    logout(request)
+    response = HttpResponseRedirect(reverse('main:login'))
+    response.delete_cookie('last_login')
+    return response
+```
+
+Terakhir, di main.html saya menambahkan `{{ last_login }}` untuk menampilkan waktu login terakhir.
+
+#### 6) Mengaitkan model Product dengan User
+
+Akhirnya, saya menghubungkan setiap produk dengan user. Tujuannya supaya user yang sedang login bisa memfilter dan melihat produk yang ia buat sendiri. Di model Product, saya menambahkan relasi ke User.
+
+```python
+from django.contrib.auth.models import User
+
+user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+```
+
+Di create_product pada views.py, setiap produk baru disimpan dengan atribut user mengarah ke request.user. Di halaman utama, saya menambahkan tombol filter supaya pengguna bisa memilih melihat semua produk atau hanya miliknya.
+
+```html
+<a href="?filter=all">
+  <button type="button">All Products</button>
+</a>
+<a href="?filter=my">
+  <button type="button">My Products</button>
+</a>
+```
+
+Di product_detail.html, saya juga menampilkan nama pengguna yang mengunggah produk di bagian bawah untuk INFORMASI AUTHOR.
+
+---
+
+## PERTANYAAN
+
+### 1) Apa itu Django `AuthenticationForm`? Apa kelebihan dan kekurangannya
+
+`AuthenticationForm` adalah form bawaan untuk login yang memvalidasi kredensial sebagai bagian dari validasi form, dan dipakai oleh `LoginView` secara default. Kelebihannya, penggunaan dengan sistem auth dan session sehingga tidak perlu menulis form dari nol, serta bisa di‐subclass untuk kebutuhan kustom. Kekurangannya, kebutuhan non standar seperti login via email atau aturan akun khusus tetap memerlukan override atau backend kustom.
+
+### 2) Apa bedanya autentikasi dan otorisasi di Django
+
+Autentikasi memverifikasi identitas pengguna, sedangkan otorisasi menentukan apa yang boleh dilakukan pengguna yang sudah terautentikasi. Django menyediakan keduanya dalam satu sistem: autentikasi melalui `authenticate()`/`login()` dan otorisasi lewat permission, groups, serta pembatas akses seperti `login_required`.
+
+### 3) Kelebihan dan kekurangan session vs cookies untuk menyimpan state
+
+Cookie disimpan di browser, ringan dan tidak membebani server, tetapi kapasitas kecil dan rentan manipulasi jika tidak dikonfigurasi aman. Session di Django umumnya menyimpan data di server sementara browser hanya membawa session ID dalam cookie, sehingga lebih aman dan fleksibel tetapi menambah beban penyimpanan server.
+
+### 4) Apakah cookies aman secara default? Bagaimana Django menanganinya
+
+Cookie tidak otomatis aman. Risiko umum meliputi pencurian di koneksi tidak terenkripsi dan akses oleh skrip jika tidak diatur `HttpOnly`. Django menyediakan proteksi CSRF berbasis token, serta opsi penguatan lewat setting seperti `SESSION_COOKIE_HTTPONLY` dan `CSRF_COOKIE_SECURE` agar cookie tidak dibaca JavaScript dan hanya dikirim via HTTPS. Gunakan HTTPS, `HttpOnly`, `Secure`, dan nilai `SameSite` yang sesuai.
