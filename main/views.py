@@ -26,7 +26,7 @@ def show_main(request):
         'npm' : '2406431536',
         'name': 'Haekal Handrian',
         'class': 'PBP C',
-        'products': product_list,
+        'product_list': product_list,
         'last_login': request.COOKIES.get('last_login', 'Never')
     }
 
