@@ -1,158 +1,57 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>SPORTYSHOP</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #000;
-      color: #fff;
-    }
+{% extends 'base.html' %}
+{% load static %}
 
-    header {
-      padding: 10px 20px;
-      background: #111;
-      border-bottom: 1px solid #333;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+{% block meta %}
+<title>Sportyshop - Discover Unique Products</title>
+{% endblock meta %}
 
-    .brand {
-      display: flex;
-      align-items: center;
-      font-weight: bold;
-      font-size: 18px;
-      gap: 8px;
-    }
+{% block content %}
+{% include 'navbar.html' %}
+<div class="w-full min-h-screen pt-16 bg-gray-900 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    .brand img {
-      width: 24px;
-      height: 24px;
-    }
+    <!-- Header Section -->
+    <div class="mb-8 text-center">
+      <h1 class="text-4xl font-bold text-white mb-2">Discover Our Products</h1>
+      <p class="text-gray-400">Explore a curated collection of unique and amazing products.</p>
+    </div>
 
-    .hero {
-      text-align: center;
-      padding: 40px 20px;
-      border: 1px solid #262626;
-      margin: 16px;
-    }
+    <!-- Filter Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 bg-gray-800 rounded-lg border border-gray-700 p-4 shadow-md">
+      <div class="flex space-x-3 mb-4 sm:mb-0">
+        <a href="?" class="{% if request.GET.filter == 'all' or not request.GET.filter  %} bg-purple-600 text-white{% else %}bg-gray-700 text-gray-300 border border-gray-600{% endif %} px-4 py-2 rounded-md font-medium transition-colors hover:bg-purple-600 hover:text-white">
+          All Products
+        </a>
+        <a href="?filter=my" class="{% if request.GET.filter == 'my' %} bg-purple-600 text-white{% else %}bg-gray-700 text-gray-300 border border-gray-600{% endif %} px-4 py-2 rounded-md font-medium transition-colors hover:bg-purple-600 hover:text-white">
+          My Products
+        </a>
+      </div>
+      {% if user.is_authenticated %}
+        <div class="text-sm text-gray-400">
+          Last login: {{ last_login }}
+        </div>
+      {% endif %}
+    </div>
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 0 16px;
-    }
-
-
-    a.card {
-      position: relative;
-      display: block;
-      background: #0a0a0a;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px; 
-      overflow: hidden;
-      text-decoration: none;
-      color: #fff;
-      aspect-ratio: 1 / 1; 
-    }
-
-    .card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: grayscale(100%);
-      transition: transform .25s ease, filter .25s ease, opacity .25s ease;
-      opacity: .95;
-    }
-    .card:hover img { filter: grayscale(0%); transform: scale(1.02); opacity: 1; }
-
-    .caption {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 10px;
-      background: rgba(0,0,0,.7);
-      opacity: 0;
-      transition: opacity .25s ease;
-    }
-    .card:hover .caption { opacity: 1; }
-
-    .title { font-size: 16px; font-weight: bold; }
-    .price { font-size: 14px; color: #aaa; }
-
-    footer {
-      text-align: center;
-      padding: 15px;
-      border-top: 1px solid #333;
-      margin-top: 30px;
-      font-size: 17px;
-      color: #aaa;
-    }
-  </style>
-</head>
-<body>
-
-<h1>SPORTYSHOP</h1>
-
-<h5>NPM: </h5>
-<p>{{ npm }}</p>
-
-<h5>Name:</h5>
-<p>{{ name }}</p>
-
-<h5>Class:</h5>
-<p>{{ class }}</p>
-
-<a href="{% url 'main:create_product' %}">
-  <button>+ Add product</button>
-</a>
-
-
-<a href="{% url 'main:logout' %}">
-  <button>Logout</button>
-</a>
-
-<h5>Sesi terakhir login: {{ last_login }}</h5>
-
-<a href="?filter=all">
-    <button type="button">All Product</button>
-</a>
-<a href="?filter=my">
-    <button type="button">My Product</button>
-</a>
-
-<hr>
-
-{% if not product_list %}
-<p>Belum ada data produk terbaru.</p>
-{% else %}
-
-{% for product in product_list %}
-<div>
-  <h2><a href="{% url 'main:show_product' product.id %}">{{ product.name }}</a></h2>
-
-  <p><b>{{ product.get_category_display }}</b>{% if product.is_featured %} | 
-    <b>Featured</b>{% endif %}{% if product.is_product_hot %} | 
-    <b>Hot</b>{% endif %} | <i>{{ product.created_at|date:"d M Y H:i" }}</i> 
-    | Views: {{ product.product_views }}</p>
-
-  {% if product.thumbnail %}
-  <img src="{{ product.thumbnail }}" alt="thumbnail" width="150" height="100">
-  <br />
-  {% endif %}
-
-  <p>{{ product.content|truncatewords:25 }}...</p>
-
-  <p><a href="{% url 'main:show_product' product.id %}"><button>Read More</button></a></p>
+    <!-- Product Grid -->
+    {% if not product_list %}
+      <div class="bg-gray-800 rounded-lg border border-gray-700 p-12 text-center shadow-lg">
+        <div class="w-48 h-48 mx-auto mb-6">
+          <img src="{% static 'images/no-product-found.png' %}" alt="No products available" class="w-full h-full object-contain">
+        </div>
+        <h3 class="text-2xl font-medium text-white mb-2">No Products Found</h3>
+        <p class="text-gray-400 mb-6">It looks like there are no products available at the moment. Why not be the first to add one?</p>
+        <a href="{% url 'main:create_product' %}" class="inline-flex items-center px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors font-semibold">
+          Create Product
+        </a>
+      </div>
+    {% else %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for product in product_list %}
+          {% include 'card_product.html' with product=product %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
 </div>
-
-<hr>
-{% endfor %}
-
-{% endif %}
- 
-</body>
-</html>
+{% endblock content %}

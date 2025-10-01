@@ -220,3 +220,31 @@ Cookie disimpan di browser, ringan dan tidak membebani server, tetapi kapasitas 
 ### 4) Apakah cookies aman secara default? Bagaimana Django menanganinya
 
 Cookie tidak otomatis aman. Risiko umum meliputi pencurian di koneksi tidak terenkripsi dan akses oleh skrip jika tidak diatur `HttpOnly`. Django menyediakan proteksi CSRF berbasis token, serta opsi penguatan lewat setting seperti `SESSION_COOKIE_HTTPONLY` dan `CSRF_COOKIE_SECURE` agar cookie tidak dibaca JavaScript dan hanya dikirim via HTTPS. Gunakan HTTPS, `HttpOnly`, `Secure`, dan nilai `SameSite` yang sesuai.
+
+## Tugas 5
+
+### Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
+Ketika ada beberapa CSS selector yang mengatur elemen yang sama, browser akan menentukan aturan mana yang digunakan berdasarkan prinsip specificity dan cascade. Prioritasnya dimulai dari inline style (paling tinggi), lalu ID selector, kemudian class, pseudo-class, dan attribute selector, setelah itu baru element/tag selector, sedangkan universal selector, inheritance, dan default browser style berada pada prioritas terendah. Jika specificity sama, aturan yang ditulis paling akhir akan dipakai, dan jika ada !important, maka aturan tersebut akan mengalahkan semuanya kecuali ada !important lain dengan tingkat specificity yang lebih tinggi.
+
+### Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design, serta jelaskan mengapa!
+Responsive design adalah pendekatan dalam pengembangan web agar tampilan aplikasi menyesuaikan ukuran layar perangkat seperti desktop, tablet, atau smartphone, sehingga pengguna tetap nyaman tanpa harus melakukan zoom atau scroll horizontal. Konsep ini penting karena mayoritas pengguna internet saat ini mengakses melalui perangkat mobile, sehingga web yang tidak responsive akan menurunkan pengalaman pengguna dan ranking SEO. Misalnya, Instagram Web sudah menerapkan responsive design sehingga tampilannya menyesuaikan di layar ponsel maupun laptop, sedangkan beberapa situs lama atau portal berita kuno masih menggunakan ukuran tetap sehingga sulit dibaca di layar kecil.
+
+### Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!
+Dalam CSS box model, margin, border, dan padding memiliki fungsi berbeda. Margin adalah jarak luar elemen yang memisahkannya dari elemen lain di sekitarnya, border adalah garis yang mengelilingi elemen sebagai pembatas antara isi dan luar elemen, sedangkan padding adalah ruang di dalam border yang memisahkan konten dari garis batas elemen. Ketiganya dapat diatur dengan CSS, misalnya `margin: 20px;`, `border: 2px solid black;`, `padding: 15px;` untuk membuat jarak luar, garis tepi, dan jarak isi ke tepi.
+
+### Jelaskan konsep flex box dan grid layout beserta kegunaannya!
+Flexbox dan grid layout adalah sistem layout modern di CSS yang memudahkan pengaturan elemen dibanding metode lama seperti float. Flexbox berfokus pada tata letak satu dimensi (horizontal atau vertikal) dan sangat cocok untuk mengatur item dalam baris atau kolom dengan properti seperti `display: flex;`, `justify-content;`, dan `align-items;`. Sementara itu, grid layout berfokus pada tata letak dua dimensi (baris dan kolom sekaligus), sehingga ideal untuk membuat struktur halaman kompleks menggunakan properti seperti `display: grid;`, `grid-template-columns;`, dan `gap;`. Maka, flexbox lebih cocok untuk mengatur isi komponen, sedangkan grid lebih tepat digunakan untuk mengatur keseluruhan layout halaman.
+
+### Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial)!
+1.  **Membuat fungsi baru** `edit_product` untuk edit product dan `delete_product` untuk menghapus product di `views.py` dan hubungkannya ke http request di `urls.py`.
+2.  **Mengatur konfigurasi static** di `settings.py` dan tambahkan folder baru bernama `static` di roots.
+3.  **Membuat html baru** untuk `edit_product` dan `card_product` untuk digunakan nanti.
+4.  **Membuat folder css** di `static/` dan tambahkan file `global.css` untuk css default/global.
+5.  **Menambahkan konfigurasi tailwind** di `base.html` agar dapat menggunakan tailwind.
+6.  **Menambahkan navbar.html** di `templates` roots untuk navigation bar website dan buatkan konfigurasi untuk mobile dan desktop agar dapat reponsive.
+7.  **Menambahkan navbar** di `main.html` dengan `include`.
+8.  **Mendesign seluruh templates** di main sesuai yang diinginkan dengan menggunakan tailwind dan html.
+9.  Saya juga menggunakan `card_product.html` sebagai card untuk product-product yang ada dan hubungkan ke `main.html` dengan `include`.
+10. Saya juga membuat folder baru di `static` bernama `image` untuk image yang digunakan pada aplikasi ini dan menambahkan image bernama `no-product` sebagai default image saat tidak ada product.
+11. Lakukan "git add .", "git commit -m ", dan "git push origin " serta "git push PWS " setiap kali melakukan perubahan.
+
