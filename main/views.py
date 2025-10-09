@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from main.forms import ProductForm
 from main.models import Product
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.core import serializers
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
@@ -11,22 +11,18 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+import json
 
 
 
 @login_required(login_url='/login')
 def show_main(request):
-    filter_type = request.GET.get("filter", "all")  # default 'all'
-    if filter_type == "all":
-        product_list = Product.objects.all()
-    else:
-        product_list = Product.objects.filter(user=request.user)
-
     context = {
         'npm' : '2406431536',
-        'name': 'Haekal Handrian',
+        'name': request.user.username,
         'class': 'PBP C',
-        'product_list': product_list,
         'last_login': request.COOKIES.get('last_login', 'Never')
     }
 
@@ -106,9 +102,34 @@ def show_xml(request):
     return HttpResponse(xml_data, content_type="application/xml")
 
 def show_json(request):
-    product_list = Product.objects.all()
-    json_data = serializers.serialize("json", product_list)
-    return HttpResponse(json_data, content_type="application/json")
+    filter_type = request.GET.get("filter", "all")
+
+    if filter_type == "my" and request.user.is_authenticated:
+        product_list = Product.objects.filter(user=request.user)
+    else:
+        product_list = Product.objects.all()
+
+    data = [
+        {
+            'id': product.id,
+            'name': product.name,
+            'price': product.price,
+            'description': product.description,
+            'thumbnail': product.thumbnail,
+            'category': product.category,
+            'category_display': product.get_category_display(),
+            'is_featured': product.is_featured,
+            'is_product_hot': product.is_product_hot,
+            'stock': product.stock,
+            'product_views': product.product_views,
+            'created_at': product.created_at.isoformat() if product.created_at else None,
+            'user_id': product.user.id if product.user else None,
+            'username': product.user.username if product.user else 'Anonymous',
+        }
+        for product in product_list
+    ]
+
+    return JsonResponse(data, safe=False)
 
 def create_product(request):
     form = ProductForm(request.POST or None)
@@ -135,3 +156,207 @@ def show_product(request, id):
     }
 
     return render(request, "product_detail.html", context)
+
+@csrf_exempt
+@require_POST
+@login_required(login_url='/login')
+def create_product_ajax(request):
+    try:
+        name = request.POST.get("name")
+        price = request.POST.get("price")
+        description = request.POST.get("description")
+        thumbnail = request.POST.get("thumbnail")
+        category = request.POST.get("category")
+        stock = request.POST.get("stock")
+        is_featured = request.POST.get("is_featured") == 'on'
+
+        if not all([name, price, description, thumbnail, category, stock]):
+            return JsonResponse({
+                'status': 'error',
+                'message': 'All fields are required!'
+            }, status=400)
+
+        new_product = Product(
+            name=name,
+            price=int(price),
+            description=description,
+            thumbnail=thumbnail,
+            category=category,
+            stock=int(stock),
+            is_featured=is_featured,
+            user=request.user
+        )
+        new_product.save()
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Product created successfully!',
+            'product_id': new_product.id
+        }, status=201)
+
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+@csrf_exempt
+@require_POST
+@login_required(login_url='/login')
+def update_product_ajax(request, id):
+    try:
+        product = get_object_or_404(Product, pk=id)
+
+        if product.user != request.user:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'You are not authorized to edit this product!'
+            }, status=403)
+
+        product.name = request.POST.get("name", product.name)
+        product.price = int(request.POST.get("price", product.price))
+        product.description = request.POST.get("description", product.description)
+        product.thumbnail = request.POST.get("thumbnail", product.thumbnail)
+        product.category = request.POST.get("category", product.category)
+        product.stock = int(request.POST.get("stock", product.stock))
+        product.is_featured = request.POST.get("is_featured") == 'on'
+
+        product.save()
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Product updated successfully!'
+        }, status=200)
+
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+@csrf_exempt
+@require_POST
+@login_required(login_url='/login')
+def delete_product_ajax(request, id):
+    try:
+        product = get_object_or_404(Product, pk=id)
+
+        if product.user != request.user:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'You are not authorized to delete this product!'
+            }, status=403)
+
+        product.delete()
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Product deleted successfully!'
+        }, status=200)
+
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+@csrf_exempt
+@require_POST
+def login_ajax(request):
+    try:
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        if not username or not password:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Username and password are required!'
+            }, status=400)
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            response = JsonResponse({
+                'status': 'success',
+                'message': 'Login successful!',
+                'username': user.username
+            }, status=200)
+            response.set_cookie('last_login', str(datetime.datetime.now()))
+            return response
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid username or password!'
+            }, status=401)
+
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+@csrf_exempt
+@require_POST
+def register_ajax(request):
+    try:
+        username = request.POST.get('username')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+
+        if not all([username, password1, password2]):
+            return JsonResponse({
+                'status': 'error',
+                'message': 'All fields are required!'
+            }, status=400)
+
+        if password1 != password2:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Passwords do not match!'
+            }, status=400)
+
+        form = UserCreationForm({
+            'username': username,
+            'password1': password1,
+            'password2': password2
+        })
+
+        if form.is_valid():
+            form.save()
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Registration successful! Please login.'
+            }, status=201)
+        else:
+            errors = []
+            for _, error_list in form.errors.items():
+                for error in error_list:
+                    errors.append(error)
+
+            return JsonResponse({
+                'status': 'error',
+                'message': ' '.join(errors)
+            }, status=400)
+
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+@login_required(login_url='/login')
+def logout_ajax(request):
+    try:
+        logout(request)
+        response = JsonResponse({
+            'status': 'success',
+            'message': 'Logout successful!'
+        }, status=200)
+        response.delete_cookie('last_login')
+        return response
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)

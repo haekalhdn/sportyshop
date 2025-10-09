@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block meta %}
-<title>Register - Sportyshop</title>
+<title>Register - SPORTYSHOP</title>
 {% endblock meta %}
 
 {% block content %}
@@ -9,98 +9,65 @@
   <div class="max-w-md w-full bg-gray-800 rounded-lg shadow-lg p-8">
     <div class="text-center mb-8">
       <h2 class="text-3xl font-bold text-white mb-2">Join Us</h2>
-      <p class="text-gray-400">Create your Sportyshop account</p>
+      <p class="text-gray-400">Create your SPORTYSHOP account</p>
     </div>
 
-    <!-- Form Errors Display -->
-    {% if form.non_field_errors %}
-      <div class="mb-6">
-        {% for error in form.non_field_errors %}
-          <div class="px-4 py-3 rounded-md text-sm border bg-red-900 border-red-700 text-red-200">
-            {{ error }}
-          </div>
-        {% endfor %}
+    <!-- Error Display Container (untuk AJAX) -->
+    <div id="error-container" class="mb-6 hidden">
+      <div class="px-4 py-3 rounded-md text-sm border bg-red-900 border-red-700 text-red-200">
+        <span id="error-message"></span>
       </div>
-    {% endif %}
+    </div>
 
-    {% if form.errors %}
-      <div class="mb-6">
-        {% for field, errors in form.errors.items %}
-          {% if field != '__all__' %}
-            {% for error in errors %}
-              <div class="px-4 py-3 rounded-md text-sm border bg-red-900 border-red-700 text-red-200 mb-2">
-                <strong>{{ field|title }}:</strong> {{ error }}
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    <form method="POST" action="" class="space-y-5">
+    <!-- Form Register menggunakan AJAX -->
+    <form id="registerForm" class="space-y-5">
       {% csrf_token %}
-      
+
       <div>
         <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
-        <input 
-          id="username" 
-          name="username" 
-          type="text" 
-          required 
+        <input
+          id="username"
+          name="username"
+          type="text"
+          required
+          class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           placeholder="Choose a username">
       </div>
 
       <div>
         <label for="password1" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
-        <input 
-          id="password1" 
-          name="password1" 
-          type="password" 
-          required 
+        <input
+          id="password1"
+          name="password1"
+          type="password"
+          required
+          class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           placeholder="Create a password">
+        <p class="mt-1 text-xs text-gray-400">Password must be at least 8 characters</p>
       </div>
 
       <div>
         <label for="password2" class="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
-        <input 
-          id="password2" 
-          name="password2" 
-          type="password" 
-          required 
+        <input
+          id="password2"
+          name="password2"
+          type="password"
+          required
+          class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           placeholder="Confirm your password">
       </div>
 
-      <button 
-        type="submit" 
+      <button
+        type="submit"
+        id="registerButton"
         class="w-full bg-purple-600 text-white font-medium py-3 px-4 rounded-md hover:bg-purple-700 transition-colors">
         Create Account
       </button>
     </form>
 
-    <!-- Messages Display -->
-    {% if messages %}
-      <div class="mt-6">
-        {% for message in messages %}
-          <div 
-            class="
-              px-4 py-3 rounded-md text-sm border
-              {% if message.tags == 'success' %}
-                bg-green-900 border-green-700 text-green-200
-              {% elif message.tags == 'error' %}
-                bg-red-900 border-red-700 text-red-200
-              {% else %}
-                bg-gray-700 border-gray-600 text-gray-200
-              {% endif %}
-            ">
-            {{ message }}
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-
     <div class="mt-6 text-center pt-6 border-t border-gray-700">
       <p class="text-gray-400 text-sm">
-        Already have an account? 
+        Already have an account?
         <a href="{% url 'main:login' %}" class="text-purple-400 hover:text-purple-500 font-medium">
           Sign In
         </a>
@@ -108,4 +75,53 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const registerButton = document.getElementById('registerButton');
+    const errorContainer = document.getElementById('error-container');
+    const errorMessage = document.getElementById('error-message');
+
+    registerButton.disabled = true;
+    registerButton.textContent = 'Creating Account...';
+    errorContainer.classList.add('hidden');
+
+    try {
+      const formData = new FormData(this);
+
+      const response = await fetch("{% url 'main:register_ajax' %}", {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showToast(data.message, 'You can now sign in with your account', 'success');
+
+        setTimeout(() => {
+          window.location.href = "{% url 'main:login' %}";
+        }, 1500);
+      } else {
+        errorMessage.textContent = data.message;
+        errorContainer.classList.remove('hidden');
+        showToast('Registration Failed', data.message, 'error');
+
+        registerButton.disabled = false;
+        registerButton.textContent = 'Create Account';
+      }
+
+    } catch (error) {
+      console.error('Error:', error);
+      errorMessage.textContent = 'An unexpected error occurred. Please try again.';
+      errorContainer.classList.remove('hidden');
+      showToast('Error', 'An unexpected error occurred', 'error');
+
+      registerButton.disabled = false;
+      registerButton.textContent = 'Create Account';
+    }
+  });
+</script>
 {% endblock content %}

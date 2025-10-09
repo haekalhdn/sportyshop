@@ -2,14 +2,14 @@
 {% load static %}
 
 {% block meta %}
-<title>{{ product.name }} - Sportyshop</title>
+<title>{{ product.name }} - SPORTYSHOP</title>
 {% endblock meta %}
 
 {% block content %}
-<div class="min-h-screen p-8">
+{% include 'navbar.html' %}
+<div class="min-h-screen pt-16 p-8 bg-gray-900 text-white">
     <div class="max-w-6xl mx-auto">
-        
-        <!-- Back Navigation -->
+
         <div class="mb-6">
             <a href="{% url 'main:show_main' %}" class="text-purple-400 hover:text-purple-500 font-medium transition-colors">
                 ← Back to Products
@@ -40,12 +40,26 @@
                 <h1 class="text-3xl sm:text-4xl font-bold text-white leading-tight mb-4">
                     {{ product.name }}
                 </h1>
-                
-                <div class="flex flex-wrap items-center text-sm text-gray-400 gap-4">
+
+                <div class="flex flex-wrap items-center text-sm text-gray-400 gap-4 mb-6">
                     <time datetime="{{ product.created_at|date:'c' }}">
                         {{ product.created_at|date:"M j, Y g:i A" }}
                     </time>
                     <span>{{ product.product_views }} views</span>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-6 p-4 bg-gray-900 rounded-lg border border-gray-700">
+                    <div>
+                        <p class="text-sm text-gray-400 mb-1">Price</p>
+                        <p class="text-3xl font-bold text-purple-400">Rp {{ product.price|floatformat:0 }}</p>
+                    </div>
+                    <div class="h-12 w-px bg-gray-700"></div>
+                    <div>
+                        <p class="text-sm text-gray-400 mb-1">Stock Available</p>
+                        <p class="text-2xl font-semibold {% if product.stock > 10 %}text-green-400{% elif product.stock > 0 %}text-yellow-400{% else %}text-red-400{% endif %}">
+                            {{ product.stock }} {% if product.stock == 1 %}unit{% else %}units{% endif %}
+                        </p>
+                    </div>
                 </div>
             </div>
 
