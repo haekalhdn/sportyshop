@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-bre04=uk@+o8$b5z@@!*+60&1(z)@1it__cll=!#egks20cvk!
 
 # SECURITY WARNING: don't run with debug turned on in production!
 PRODUCTION = os.getenv('PRODUCTION', 'False').lower() == 'true'
-DEBUG = True
+DEBUG = not PRODUCTION
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "haekal-handrian-sportyshop.pbp.cs.ui.ac.id"]
 
@@ -146,22 +146,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
-if DEBUG:
-    STATICFILES_DIRS = [
-        BASE_DIR / 'static' # merujuk ke /static root project pada mode development
-    ]
-else:
-    STATIC_ROOT = BASE_DIR / 'static' # merujuk ke /static root project pada mode production
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise configuration for faster static file serving
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+# Whitenoise configuration for serving static files
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Disable unnecessary static file finders in production
-if not DEBUG:
-    STATICFILES_FINDERS = [
-        'django.contrib.staticfiles.finders.FileSystemFinder',
-        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    ]
 
 LOGIN_URL = 'main:login'
 
