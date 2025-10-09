@@ -23,6 +23,11 @@
         <button id="filter-my" onclick="handleFilterChange('my')" class="bg-gray-700 text-gray-300 border border-gray-600 px-4 py-2 rounded-md font-medium transition-colors hover:bg-purple-600 hover:text-white">
           My Products
         </button>
+        <button id="filter-my" onclick="handleFilterChange('my')" class="bg-gray-700 text-gray-300 border border-gray-600 px-4 py-2 rounded-md font-medium transition-colors hover:bg-purple-600 hover:text-white">
+          <option value = "">Default</option>
+          <option value = "">Low to High</option>
+          <option value = "">High To Low</option>
+        </button>
       </div>
       <div class="flex items-center space-x-3">
         {% if user.is_authenticated %}
