@@ -14,7 +14,28 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from main.models import Product
 
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        new_product = Product.objects.create(
+            user=request.user,
+            name=data["name"],
+            price=int(data["price"]),
+            description=data["description"],
+            thumbnail=data["thumbnail"],
+            category=data["category"],
+            stock=int(data["stock"]),
+            is_featured=data["is_featured"]
+        )
+        new_product.save()
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
 
 
 @login_required(login_url='/login')
